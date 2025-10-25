@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login & Dashboard</title>
+    <style>
+        /* --- General Styling --- */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --bg-color: #f8f9fa;
+            --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- Navigation Bar Styling --- */
+        .navbar {
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .navbar-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .navbar-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* --- Login Form Styling --- */
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 400px;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* --- Dashboard/Success Styling --- */
+        .dashboard-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            display: none; /* Initially hidden */
+        }
+
+        .success-icon {
+            color: var(--success-color);
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .login-details p {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">WebApp</a>
+        <div class="navbar-links">
+            <a href="#">Home</a>
+            <a href="#">Features</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+
+        <div class="login-container" id="loginView">
+            <h2>Sign In</h2>
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                
+                <div class="input-group">
+                    <label for="username">Username (Try: user)</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password (Try: pass)</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit">Log In</button>
+                
+                <p class="error-message" id="errorMessage"></p>
+            </form>
+        </div>
+
+        <div class="dashboard-container" id="dashboardView">
+            <div class="success-icon">&#10004;</div> <h2>Login Successful!</h2>
+            <p>Welcome to your secure dashboard. This page simulates a successful login redirect.</p>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3>Login Details Entered:</h3>
+            <div class="login-details">
+                <p><strong>Username:</strong> <span id="displayUsername"></span></p>
+                <p><strong>Password:</strong> <span id="displayPassword"></span> (Sent only to server)</p>
+            </div>
+            
+            <button onclick="logout()">Log Out</button>
+        </div>
+
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            // Prevent the form from submitting normally (which causes a page reload)
+            event.preventDefault(); 
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginView = document.getElementById('loginView');
+            const dashboardView = document.getElementById('dashboardView');
+
+            errorMessage.textContent = ''; // Clear previous errors
+            
+            // --- SIMULATED Authentication Logic ---
+            const VALID_USERNAME = 'user';
+            const VALID_PASSWORD = 'pass';
+            
+            if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+                // SUCCESS: Simulate a secure login
+                
+                // 1. Hide the login form with a transition
+                loginView.style.opacity = '0'; 
+
+                // 2. Wait for the transition to finish, then switch views
+                setTimeout(() => {
+                    loginView.style.display = 'none';
+                    
+                    // Update the success details
+                    document.getElementById('displayUsername').textContent = username;
+                    document.getElementById('displayPassword').textContent = '*'.repeat(password.length); 
+
+                    // Show the dashboard
+                    dashboardView.style.display = 'block';
+                }, 500); // Wait 500ms (matches CSS transition)
+
+            } else {
+                // FAILURE
+                errorMessage.textContent = 'Invalid username or password. Try "user" and "pass".';
+            }
+            
+            return false; // Crucial for preventing default form submission
+        }
+        
+        function logout() {
+            const loginView = document.getElementById('loginView');
+            const dashboardView = document.getElementById('dashboardView');
+            
+            // Clear inputs and error
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('errorMessage').textContent = '';
+
+            // Hide dashboard, show login
+            dashboardView.style.display = 'none';
+            loginView.style.display = 'block';
+            loginView.style.opacity = '1'; 
+        }
+
+    </script>
+</body>
+</html>
